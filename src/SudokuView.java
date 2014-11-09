@@ -11,18 +11,27 @@ import javax.swing.border.LineBorder;
 public class SudokuView extends JFrame{
 
 	public SudokuView(){
-		//Create and set up the window
 		setTitle("SUDOKU");
-		setMinimumSize(new Dimension(800, 650));
-
-		
-		JPanel contentPane = new JPanel(new GridBagLayout());
-		setContentPane(contentPane);
-		contentPane.add(createSudokuBoard(), getConstraints());
-		contentPane.add(createLeftPanel(100), new GridBagConstraints());
-		pack();
+		setMinimumSize(new Dimension(820, 650));
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		GridBagLayout layout = new GridBagLayout();
+		JPanel contentPane = new JPanel(layout);
+		setContentPane(contentPane);
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.insets = new Insets(5, 15, 5, 5);
+		c.weightx = 2.0;
+		c.weighty = 0.6;
+		c.fill = GridBagConstraints.BOTH;
+		contentPane.add(createSudokuBoard(), c);
+
+		c.weightx = 0.0;
+		c.weighty = 0.6;
+		c.fill = GridBagConstraints.VERTICAL;
+		contentPane.add(createRightPanel(), c);
+		pack();
 	}
 	
 	public JPanel createSudokuBoard(){
@@ -30,49 +39,85 @@ public class SudokuView extends JFrame{
 		for( int i = 0; i < 3; i ++ ){
 			for( int j = 0; j < 3; j++ ){
 				JPanel subSquare = createSquare(2);
-				createTextField(subSquare, i, j);
+				createButtonField(subSquare, i, j);
 				mainSquare.add(subSquare);
 			}
 		}
-		Border emptyBorder = new EmptyBorder(5, 5, 5, 5);
-		mainSquare.setBorder(emptyBorder);
 		return mainSquare;
 	}
-	public JPanel createLeftPanel(int gap){
-		GridLayout layout = new GridLayout(2, 1, 1, 1);
-		layout.setHgap(gap);
-		layout.setVgap(gap);
-		
+	public JPanel createRightPanel(){
+		GridBagLayout layout = new GridBagLayout();
 		JPanel leftPanel = new JPanel(layout);
+		GridBagConstraints c = new GridBagConstraints();
 		
-		leftPanel.add(createButtonPanel(2), new GridBagConstraints());
-		leftPanel.add(createNumberPanel(5), new GridBagConstraints());
+		c.insets = new Insets(0, 10, 0, 15);
+		c.gridx = 0;
+		c.gridy = 0;
+		c.fill = GridBagConstraints.BOTH;
+		
+		leftPanel.add(createTitlePanel(), c);
+		
+		c.gridy = 1;
+		leftPanel.add(createButtonPanel(5), c);
+		
+		c.gridy = 2;
+		c.fill = GridBagConstraints.BOTH;
+		leftPanel.add(createNumberPanel(), c);
 		
 		return leftPanel;
 	}
 	
+	public JPanel createTitlePanel(){
+		GridLayout titleLayout = new GridLayout(4, 1);
+		
+		JPanel titlePanel = new JPanel(titleLayout);
+		JPanel title2 = new JPanel();
+		
+		JLabel title = new JLabel("SUDOKU");
+		title.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		title2.add(title);
+		title2.setBackground(Color.WHITE);
+		Border titleBorder = new LineBorder(Color.getHSBColor(0.50f, 0.33f, 0.93f), 4);
+		title2.setBorder(titleBorder);
+		title2.setOpaque(true);
+		
+		titlePanel.add(title2);
+		titlePanel.setOpaque(true);
+		
+		return titlePanel;
+	}
+	
 	public JPanel createButtonPanel(int gap) {
-		GridLayout layout = new GridLayout(7, 1, 2, 2);
+		GridLayout layout = new GridLayout(7, 1, 5, 5);
 		layout.setHgap(gap);
-		layout.setVgap(gap);
 		JPanel buttonPanel = new JPanel(layout);
 		
 		JButton reset = new JButton("Reset");
 		reset.setMnemonic(KeyEvent.VK_R);
+		makeButtonPretty(reset);
+		buttonPanel.add(reset);
 		
 		JButton hint = new JButton("Hint");
 		hint.setMnemonic(KeyEvent.VK_H);
+		makeButtonPretty(hint);
+		buttonPanel.add(hint);
+		
+		JButton check = new JButton("Check");
+		check.setMnemonic(KeyEvent.VK_C);
+		makeButtonPretty(check);
+		buttonPanel.add(check);
 		
 		JButton solve = new JButton("Solve");
 		solve.setMnemonic(KeyEvent.VK_S);
+		makeButtonPretty(solve);
+		buttonPanel.add(solve);
 		
 		JButton newGame = new JButton("New Game");
 		newGame.setMnemonic(KeyEvent.VK_N);
-		
-		buttonPanel.add(reset);
-		buttonPanel.add(hint);
-		buttonPanel.add(solve);
+		makeButtonPretty(newGame);
 		buttonPanel.add(newGame);
+
 		buttonPanel.add(createDifficultyPanel());
 		
 		return buttonPanel;
@@ -100,21 +145,18 @@ public class SudokuView extends JFrame{
 		difficulties.add(difficult);
 		
 		return difficulties;
-		
 	}
 	
-	public JPanel createNumberPanel(int gap){
-		GridLayout layout = new GridLayout(3, 3, 1, 1);
-		layout.setHgap(gap);
-		layout.setVgap(gap);
+	public JPanel createNumberPanel(){
+		GridLayout layout = new GridLayout(3, 3, 5, 5);
 		JPanel numberPanel = new JPanel(layout);
 		
 		for( int i = 1; i <= 9; i++ ){
 			String value = String.valueOf(i);
 			JButton number = new JButton(value);
+			makeButtonPretty(number);
 			numberPanel.add(number);
 		}
-		
 		return numberPanel;
 	}
 	
@@ -126,26 +168,21 @@ public class SudokuView extends JFrame{
 		return mainSquare;
 	}
 	
-	public void createTextField(JPanel square, int mainRow, int mainColumn){
+	public void makeButtonPretty(JButton button){
+		button.setBorder(new LineBorder(Color.WHITE));
+		button.setBackground(Color.getHSBColor(0.50f, 0.33f, 0.93f));
+	}
+	
+	public void createButtonField(JPanel square, int mainRow, int mainColumn){
 		for( int i = 0; i < 3; i++ ){
 			for( int j = 0; j < 3; j++ ){
-				JFormattedTextField textField = new JFormattedTextField();
-				textField.setPreferredSize(new Dimension(16, 30));
-				textField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-				textField.setText(" ");
-				textField.setBorder(new EmptyBorder(1, 1, 1, 1));
-				square.add(textField);
+				JButton button = new JButton();
+				button.setBorder(BorderFactory.createEmptyBorder());
+				button.setBackground(Color.WHITE);
+				square.add(button);
 			}
 		}
 	}
-	
-	private GridBagConstraints getConstraints() {
-        GridBagConstraints wholePanelCnstr = new GridBagConstraints();
-        wholePanelCnstr.fill = java.awt.GridBagConstraints.BOTH;
-        wholePanelCnstr.weightx = 1.0;
-        wholePanelCnstr.weighty = 1.0;
-        return wholePanelCnstr;
-    }
 	
 	public static void main(String[] args){
 		JFrame window = new SudokuView();
