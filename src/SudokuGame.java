@@ -3,7 +3,7 @@ import java.util.Collections;
 
 public class SudokuGame {
 	private final SudokuSolution sudokuSolution;
-	private int[][] sudokuBoard;
+	public static int[][] sudokuBoard;
 	
 	public SudokuGame(){
 		sudokuSolution = new SudokuSolution();
@@ -68,6 +68,10 @@ public class SudokuGame {
 			
 		String sudokuString = sb.toString();
 		return sudokuString;
+	}
+	
+	public static int[][] getSudokuBoard(){
+		return sudokuBoard;
 	}
 
 }

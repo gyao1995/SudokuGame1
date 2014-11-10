@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.*;
 
@@ -10,28 +12,53 @@ import javax.swing.border.LineBorder;
 
 public class SudokuView extends JFrame{
 
+	private  final long serialVersionUID = 1L;
+	public JPanel contentPane;
+	public JPanel newContentPane;
+	private JButton[][] sudokuBoard;
+	private SudokuGame currentGame;
+	private SudokuSolution currentSolution;
+	static JButton newGame;
+	
+	
 	public SudokuView(){
+		sudokuBoard = new JButton [9][9];
+		currentGame = new SudokuGame();
+		currentSolution = currentGame.getSolution();
+		newGame = new JButton();
+		
+		contentPane = new JPanel(new GridBagLayout());
 		setTitle("SUDOKU");
 		setMinimumSize(new Dimension(820, 650));
+		setResizable(false);
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		GridBagLayout layout = new GridBagLayout();
-		JPanel contentPane = new JPanel(layout);
+	
 		setContentPane(contentPane);
+		addSudokuBoard(contentPane);
+		addRightPanel(contentPane);
 		
+		pack();
+	}
+	
+	public void addSudokuBoard(JPanel contentPane){
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(5, 15, 5, 5);
+		c.gridx = 0;
+		c.gridy = 0;
 		c.weightx = 2.0;
 		c.weighty = 0.6;
 		c.fill = GridBagConstraints.BOTH;
 		contentPane.add(createSudokuBoard(), c);
-
+	}
+	
+	public void addRightPanel(JPanel contentPane){
+		GridBagConstraints c = new GridBagConstraints();
+		c.insets = new Insets(5, 15, 5, 5);
 		c.weightx = 0.0;
 		c.weighty = 0.6;
 		c.fill = GridBagConstraints.VERTICAL;
 		contentPane.add(createRightPanel(), c);
-		pack();
 	}
 	
 	public JPanel createSudokuBoard(){
@@ -53,35 +80,40 @@ public class SudokuView extends JFrame{
 		c.insets = new Insets(0, 10, 0, 15);
 		c.gridx = 0;
 		c.gridy = 0;
+		c.weighty = 0.3;
 		c.fill = GridBagConstraints.BOTH;
 		
 		leftPanel.add(createTitlePanel(), c);
 		
-		c.gridy = 1;
+		c.gridy = 7;
+		c.weighty = 0.1;
 		leftPanel.add(createButtonPanel(5), c);
 		
-		c.gridy = 2;
-		c.fill = GridBagConstraints.BOTH;
+		c.gridy = 15;
+		c.weighty = 0.6;
 		leftPanel.add(createNumberPanel(), c);
 		
 		return leftPanel;
 	}
 	
 	public JPanel createTitlePanel(){
-		GridLayout titleLayout = new GridLayout(4, 1);
+		GridLayout titleLayout = new GridLayout(3, 1);
 		
+		JPanel emptyPanel = new JPanel();
 		JPanel titlePanel = new JPanel(titleLayout);
-		JPanel title2 = new JPanel();
+		JPanel title2 = new JPanel(new BorderLayout());
 		
 		JLabel title = new JLabel("SUDOKU");
+		title.setFont(new Font("Dialog", 0, 20));;
 		title.setHorizontalAlignment(SwingConstants.CENTER);
 		
-		title2.add(title);
+		title2.add(title, BorderLayout.CENTER);
 		title2.setBackground(Color.WHITE);
-		Border titleBorder = new LineBorder(Color.getHSBColor(0.50f, 0.33f, 0.93f), 4);
+		Border titleBorder = new LineBorder(Color.getHSBColor(0.50f, 0.33f, 0.93f), 2);
 		title2.setBorder(titleBorder);
 		title2.setOpaque(true);
 		
+		titlePanel.add(emptyPanel);
 		titlePanel.add(title2);
 		titlePanel.setOpaque(true);
 		
@@ -89,7 +121,7 @@ public class SudokuView extends JFrame{
 	}
 	
 	public JPanel createButtonPanel(int gap) {
-		GridLayout layout = new GridLayout(7, 1, 5, 5);
+		GridLayout layout = new GridLayout(6, 1, 5, 5);
 		layout.setHgap(gap);
 		JPanel buttonPanel = new JPanel(layout);
 		
@@ -117,6 +149,7 @@ public class SudokuView extends JFrame{
 		newGame.setMnemonic(KeyEvent.VK_N);
 		makeButtonPretty(newGame);
 		buttonPanel.add(newGame);
+		bindNewGameButton(newGame);
 
 		buttonPanel.add(createDifficultyPanel());
 		
@@ -179,12 +212,54 @@ public class SudokuView extends JFrame{
 				JButton button = new JButton();
 				button.setBorder(BorderFactory.createEmptyBorder());
 				button.setBackground(Color.WHITE);
+				
+				int row = mainRow * 3 + i;
+				int column = mainColumn * 3 + j;
+				bindSudokuButton(row, column, button);
 				square.add(button);
 			}
 		}
 	}
 	
+	public void bindSudokuButton(int i, int j, JButton button) {
+		int[][] initial = currentGame.getSudokuBoard();
+		if( initial[i][j] != 0 ){
+			Integer value = initial[i][j];
+			button.setText(value.toString());
+			makeSudokuInitialButtons(button);
+		}
+		sudokuBoard[i][j] = button;
+	}
+	
+	public void makeSudokuInitialButtons(JButton button){
+		button.setFont(new Font("Dialog", 13, 20));
+		button.setBackground(Color.getHSBColor(0.50f, 0.33f, 0.93f));
+	}
+	
+	public void bindNewGameButton(JButton button){
+		button.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e){
+				createNewGame();
+			}
+		});
+		newGame = button;
+	}
+	
+	public void createNewGame(){
+		remove(contentPane);
+		SudokuGame sudokuGame = new SudokuGame();
+		newContentPane = new JPanel(new GridBagLayout());
+		setContentPane(newContentPane);
+		addSudokuBoard(newContentPane);
+		addRightPanel(newContentPane);
+		
+		pack();
+		revalidate();
+		repaint();
+	}
+	
 	public static void main(String[] args){
-		JFrame window = new SudokuView();
+		SudokuView view = new SudokuView();
 	}
 }
