@@ -12,9 +12,9 @@ public class SudokuSolution {
 			integers.add(num);
 		Collections.shuffle(integers);
 		
-		for( int i = 0; i <= 8; i++ ){
+		for( int i = 0; i < 9; i++ ){
 			ArrayList<Integer> rowNums = new ArrayList<Integer>(integers);
-			for( int j = 0; j <= 8; j++){
+			for( int j = 0; j < 9; j++){
 				sudokuBoard[i][j] = getNextNumber(sudokuBoard, i, j, rowNums);
 			}
 		}
@@ -43,7 +43,7 @@ public class SudokuSolution {
 	 * @param value is the value to check for
 	 * @param sudokuBoard
 	 */
-	public boolean checkRow(int row, int value, int[][] sudokuBoard){
+	public static boolean checkRow(int row, int value, int[][] sudokuBoard){
 		for( int column = 0; column <= 8; column++ ){
 			if( sudokuBoard[row][column] == value )
 				return false;
@@ -51,7 +51,7 @@ public class SudokuSolution {
 		return true;
 	}
 	
-	public boolean checkColumn(int column, int value, int[][] sudokuBoard){
+	public static boolean checkColumn(int column, int value, int[][] sudokuBoard){
 		for( int row = 0; row <= 8; row++ ){
 			if( sudokuBoard[row][column] == value)
 				return false;
@@ -59,7 +59,7 @@ public class SudokuSolution {
 		return true;
 	}
 	
-	public boolean checkBlock(int row, int column, int value, int[][] sudokuBoard){
+	public static boolean checkBlock(int row, int column, int value, int[][] sudokuBoard){
 		int rowStart = getBlockIndex(row);
 		int columnStart = getBlockIndex(column);
 		
@@ -72,7 +72,7 @@ public class SudokuSolution {
 		return true;
 	}
 	
-	private int getBlockIndex( int lineNum ){
+	private static int getBlockIndex( int lineNum ){
 		int index = -1;
 		if( lineNum >= 0 & lineNum <= 2 ) return index = 0;
 		if( lineNum >= 3 & lineNum <= 5) return index = 3;

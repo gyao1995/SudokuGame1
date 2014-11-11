@@ -23,6 +23,8 @@ public class SudokuView extends JFrame{
 	static JButton solve;
 	static JButton hint;
 	static JButton reset;
+	private JButton selectedSquare;
+	private JButton check;
 	
 	public SudokuView(){
 		sudokuBoard = new JButton [9][9];
@@ -146,6 +148,7 @@ public class SudokuView extends JFrame{
 		JButton check = new JButton("Check");
 		check.setMnemonic(KeyEvent.VK_C);
 		makeButtonPretty(check);
+		bindCheckButton(check);
 		buttonPanel.add(check);
 		
 		JButton solve = new JButton("Solve");
@@ -197,6 +200,7 @@ public class SudokuView extends JFrame{
 			String value = String.valueOf(i);
 			JButton number = new JButton(value);
 			makeButtonPretty(number);
+			bindNumber(i, number);
 			numberPanel.add(number);
 		}
 		return numberPanel;
@@ -242,6 +246,11 @@ public class SudokuView extends JFrame{
 			Integer value = initial[i][j];
 			button.setText(value.toString());
 			makeSudokuInitialButtons(button);
+			makeSelectableSquares(button, value);
+		}
+		else{
+			int value = 0;
+			makeSelectableSquares(button, value);
 		}
 		sudokuBoard[i][j] = button;
 	}
@@ -249,6 +258,51 @@ public class SudokuView extends JFrame{
 	public void makeSudokuInitialButtons(JButton button){
 		button.setFont(new Font("Dialog", 13, 20));
 		button.setBackground(Color.getHSBColor(0.50f, 0.33f, 0.93f));
+	}
+	
+	public void makeSelectableSquares(final JButton button, final int value){
+		button.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e){
+				if( value == 0 ){
+					if(selectedSquare != button & selectedSquare != null){
+						selectedSquare.setBackground(Color.WHITE);
+						selectSquare(button);
+					}
+					else if (selectedSquare == null){
+						selectSquare(button);
+					}
+					else if (selectedSquare == button){
+						button.setBackground(Color.WHITE);
+						button.setText(null);
+						selectedSquare = null;
+					}
+				}
+				else{
+					if(selectedSquare != null)
+						selectedSquare.setBackground(Color.WHITE); 
+					selectedSquare = null;
+					
+				}
+			}
+		});
+	}
+	
+	public void selectSquare(JButton button){
+		button.setBackground(Color.getHSBColor(0.55f, 0.33f, 0.85f));
+		selectedSquare = button;
+	}
+	
+	public void bindNumber(final int number, final JButton button){
+		button.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e){
+				if(selectedSquare != null ){
+					selectedSquare.setText(String.valueOf(number));
+					selectedSquare.setFont(new Font("Dialog", 13, 20));
+				}
+			}
+		});
 	}
 	
 	public void bindNewGameButton(JButton button){
@@ -289,6 +343,15 @@ public class SudokuView extends JFrame{
 		});
 	}
 	
+	public void bindCheckButton(JButton button){
+		button.addActionListener(new ActionListener(){
+			
+			public void actionPerformed(ActionEvent e){
+				checkGame();
+			}
+		});
+	}
+	
 	public void createNewGame(){
 		remove(contentPane);
 		SudokuGame sudokuGame = new SudokuGame();
@@ -323,7 +386,8 @@ public class SudokuView extends JFrame{
 		for( int i = 0; i < 9; i++ ){
 			for( int j = 0; j < 9; j++ ){
 				if( initial[i][j] == 0 ){
-					sudokuBoard[i][j].setText(" ");
+					sudokuBoard[i][j].setText(null);
+					sudokuBoard[i][j].setBackground(Color.WHITE);
 				}
 			}
 		}
@@ -342,9 +406,7 @@ public class SudokuView extends JFrame{
 		Collections.shuffle(colPos);
 		
 		int[][] solvedGameBoard = currentSolution.sudokuBoard; 
-		
-		int value;
-		
+
 		outerLoop:
 		for( int m = 0; m < rowPos.size(); m++ ){
 			for( int n = 0; n < colPos.size(); n++ ){
@@ -353,12 +415,47 @@ public class SudokuView extends JFrame{
 				
 				String valueString = sudokuBoard[row][col].getText();
 				try {
-					value = Integer.valueOf(valueString);
+					Integer.valueOf(valueString);
 				} catch (NumberFormatException noValue){
 					int num = solvedGameBoard[row][col];
 					sudokuBoard[row][col].setText(String.valueOf(num));
 					sudokuBoard[row][col].setFont(new Font("Dialog", 13, 20));
 					break outerLoop;
+				}
+			}
+		}
+	}
+	
+	public void checkGame(){
+		int[][] initial = initialGameBoard;
+		int[][] solvedGameBoard = currentSolution.sudokuBoard; 
+		int[][] currentGameBoard = new int[9][9];
+		
+		for( int i = 0; i < 9; i++ ){
+			for( int j = 0; j < 9; j++ ){
+				String valueString = sudokuBoard[i][j].getText();
+				
+				try{ 
+					int value = Integer.valueOf(valueString);
+					currentGameBoard[i][j] = value;
+				} catch(NumberFormatException noValue){
+					currentGameBoard[i][j] = 0;
+				}
+			}
+		}
+		
+		for( int i = 0; i < 9; i++ ){
+			for( int j = 0; j < 9; j++ ){
+				int value = currentGameBoard[i][j];
+
+				if( initial[i][j] == 0 & value != 0){
+					currentGameBoard[i][j] = 0;
+					boolean valid = (SudokuSolution.checkRow(i, value, currentGameBoard) 
+							& SudokuSolution.checkColumn(j, value, currentGameBoard)
+							& SudokuSolution.checkBlock(i, j, value, currentGameBoard));
+					if(valid == false ){
+						sudokuBoard[i][j].setBackground(Color.getHSBColor(0.95f, 0.33f, 0.85f));
+					}
 				}
 			}
 		}

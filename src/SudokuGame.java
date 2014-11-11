@@ -41,9 +41,9 @@ public class SudokuGame {
 		SudokuSolution tempSudoku = new SudokuSolution(gameBoard);
 		
 		for( int value = 1; value <= 9; value++ ){
-			if( tempSudoku.checkRow(row, value, gameBoard) 
-					& tempSudoku.checkColumn(column, value, gameBoard)
-					& tempSudoku.checkBlock(row, column, value, gameBoard)){
+			if( SudokuSolution.checkRow(row, value, gameBoard) 
+					& SudokuSolution.checkColumn(column, value, gameBoard)
+					& SudokuSolution.checkBlock(row, column, value, gameBoard)){
 			numSolutions++;
 			}
 		}
