@@ -17,15 +17,21 @@ public class SudokuView extends JFrame{
 	public JPanel newContentPane;
 	private JButton[][] sudokuBoard;
 	private SudokuGame currentGame;
+	private int[][] initialGameBoard;
 	private SudokuSolution currentSolution;
 	static JButton newGame;
-	
+	static JButton solve;
+	static JButton hint;
+	static JButton reset;
 	
 	public SudokuView(){
 		sudokuBoard = new JButton [9][9];
 		currentGame = new SudokuGame();
 		currentSolution = currentGame.getSolution();
 		newGame = new JButton();
+		solve = new JButton();
+		reset = new JButton();
+		hint = new JButton();
 		
 		contentPane = new JPanel(new GridBagLayout());
 		setTitle("SUDOKU");
@@ -128,11 +134,13 @@ public class SudokuView extends JFrame{
 		JButton reset = new JButton("Reset");
 		reset.setMnemonic(KeyEvent.VK_R);
 		makeButtonPretty(reset);
+		bindResetButton(reset);
 		buttonPanel.add(reset);
 		
 		JButton hint = new JButton("Hint");
 		hint.setMnemonic(KeyEvent.VK_H);
 		makeButtonPretty(hint);
+		bindHintButton(hint);
 		buttonPanel.add(hint);
 		
 		JButton check = new JButton("Check");
@@ -143,14 +151,15 @@ public class SudokuView extends JFrame{
 		JButton solve = new JButton("Solve");
 		solve.setMnemonic(KeyEvent.VK_S);
 		makeButtonPretty(solve);
+		bindSolveButton(solve);
 		buttonPanel.add(solve);
 		
 		JButton newGame = new JButton("New Game");
 		newGame.setMnemonic(KeyEvent.VK_N);
 		makeButtonPretty(newGame);
-		buttonPanel.add(newGame);
 		bindNewGameButton(newGame);
-
+		buttonPanel.add(newGame);
+		
 		buttonPanel.add(createDifficultyPanel());
 		
 		return buttonPanel;
@@ -222,7 +231,13 @@ public class SudokuView extends JFrame{
 	}
 	
 	public void bindSudokuButton(int i, int j, JButton button) {
-		int[][] initial = currentGame.getSudokuBoard();
+		initialGameBoard = new int[9][9];
+		for( int n = 0; n < 9; n++ ){
+			System.arraycopy(SudokuGame.sudokuBoard[n], 0, initialGameBoard[n], 0, initialGameBoard[n].length);
+		}
+		
+		int[][] initial = initialGameBoard;
+		
 		if( initial[i][j] != 0 ){
 			Integer value = initial[i][j];
 			button.setText(value.toString());
@@ -246,6 +261,34 @@ public class SudokuView extends JFrame{
 		newGame = button;
 	}
 	
+	public void bindSolveButton(JButton button){
+		button.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e){
+				solveGame();
+			}
+		});
+		solve = button;
+	}
+	
+	public void bindHintButton(JButton button){
+		button.addActionListener(new ActionListener(){
+			
+			public void actionPerformed(ActionEvent e){
+				getHint();
+			}
+		});
+	}
+	
+	public void bindResetButton(JButton button){
+		button.addActionListener(new ActionListener(){
+			
+			public void actionPerformed(ActionEvent e){
+				resetGame();
+			}
+		});
+	}
+	
 	public void createNewGame(){
 		remove(contentPane);
 		SudokuGame sudokuGame = new SudokuGame();
@@ -257,6 +300,68 @@ public class SudokuView extends JFrame{
 		pack();
 		revalidate();
 		repaint();
+		
+		currentGame = sudokuGame;
+		currentSolution = currentGame.getSolution();
+	}
+	
+	public void solveGame(){
+		int[][] solvedGameBoard = currentSolution.sudokuBoard; 
+		
+		for( int i = 0; i < 9; i++ ){
+			for( int j = 0; j < 9; j++ ){
+				Integer value = solvedGameBoard[i][j];
+				sudokuBoard[i][j].setText(value.toString());
+				sudokuBoard[i][j].setFont(new Font("Dialog", 13, 20));
+			}
+		}
+	}
+	
+	public void resetGame(){
+		int[][] initial = initialGameBoard;
+		
+		for( int i = 0; i < 9; i++ ){
+			for( int j = 0; j < 9; j++ ){
+				if( initial[i][j] == 0 ){
+					sudokuBoard[i][j].setText(" ");
+				}
+			}
+		}
+	}
+	
+	public void getHint(){
+		ArrayList<Integer> rowPos = new ArrayList<Integer>();
+		ArrayList<Integer> colPos = new ArrayList<Integer>();
+		
+		for( int i = 0; i < 9; i++ )
+			rowPos.add(i);
+		for( int j = 0; j < 9; j++ )
+			colPos.add(j);
+		
+		Collections.shuffle(rowPos);
+		Collections.shuffle(colPos);
+		
+		int[][] solvedGameBoard = currentSolution.sudokuBoard; 
+		
+		int value;
+		
+		outerLoop:
+		for( int m = 0; m < rowPos.size(); m++ ){
+			for( int n = 0; n < colPos.size(); n++ ){
+				int row = rowPos.get(m);
+				int col = colPos.get(n);
+				
+				String valueString = sudokuBoard[row][col].getText();
+				try {
+					value = Integer.valueOf(valueString);
+				} catch (NumberFormatException noValue){
+					int num = solvedGameBoard[row][col];
+					sudokuBoard[row][col].setText(String.valueOf(num));
+					sudokuBoard[row][col].setFont(new Font("Dialog", 13, 20));
+					break outerLoop;
+				}
+			}
+		}
 	}
 	
 	public static void main(String[] args){
