@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -6,25 +7,26 @@ import java.util.*;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 
 public class SudokuView extends JFrame{
 
-	private  final long serialVersionUID = 1L;
-	public JPanel contentPane;
-	public JPanel newContentPane;
+	private static final long serialVersionUID = 1L;
+	protected JPanel contentPane;
+	protected JPanel newContentPane;
 	private JButton[][] sudokuBoard;
-	private SudokuGame currentGame;
+	protected SudokuGame currentGame;
 	private int[][] initialGameBoard;
-	private SudokuSolution currentSolution;
-	static JButton newGame;
-	static JButton solve;
-	static JButton hint;
-	static JButton reset;
+	protected SudokuSolution currentSolution;
+	private static JButton newGame;
+	private static JButton solve;
+	private static JButton hint;
+	private static JButton reset;
 	private JButton selectedSquare;
+	private JButton[][] wrongSquares;
 	private JButton check;
+	private JButton selectedNumber;
+	private boolean win;
 	
 	public SudokuView(){
 		sudokuBoard = new JButton [9][9];
@@ -34,6 +36,10 @@ public class SudokuView extends JFrame{
 		solve = new JButton();
 		reset = new JButton();
 		hint = new JButton();
+		check = new JButton();
+		win = false;
+		wrongSquares = new JButton[9][9];
+		initializeWrongSquares();
 		
 		contentPane = new JPanel(new GridBagLayout());
 		setTitle("SUDOKU");
@@ -267,9 +273,11 @@ public class SudokuView extends JFrame{
 				if( value == 0 ){
 					if(selectedSquare != button & selectedSquare != null){
 						selectedSquare.setBackground(Color.WHITE);
+						resetWrongSquares();
 						selectSquare(button);
 					}
 					else if (selectedSquare == null){
+						resetWrongSquares();
 						selectSquare(button);
 					}
 					else if (selectedSquare == button){
@@ -288,8 +296,47 @@ public class SudokuView extends JFrame{
 		});
 	}
 	
+	public void resetWrongSquares(){
+		int[][] wrongSquareBoard = new int[9][9];
+		
+		for( int i = 0; i < 9; i++ ){
+			for( int j = 0; j < 9; j++ ){
+				String valueString = wrongSquares[i][j].getText();
+				int value = Integer.valueOf(valueString);
+				wrongSquareBoard[i][j] = value;
+			}
+		}
+		
+		for( int i = 0; i < 9; i++ ){
+			for( int j = 0; j < 9; j++ ){
+				int value = wrongSquareBoard[i][j];
+				
+				if( value != 0 )
+					wrongSquares[i][j].setBackground(Color.WHITE);
+			}
+		}
+		initializeWrongSquares();
+	}
+	
+	public void initializeWrongSquares(){
+		for( int i = 0; i < 9; i++ ){
+			for( int j = 0; j < 9; j++ ){
+				wrongSquares[i][j] = new JButton("0");
+			}
+		}
+	}
+	
 	public void selectSquare(JButton button){
 		button.setBackground(Color.getHSBColor(0.55f, 0.33f, 0.85f));
+		if(selectedNumber != null ){
+			int number = Integer.parseInt(selectedNumber.getText());
+			button.setText(String.valueOf(number));
+			button.setFont(new Font("Dialog", 13, 20));
+			if( checkWin() ){
+				win();
+			}
+		}
+		selectedNumber = null;
 		selectedSquare = button;
 	}
 	
@@ -297,9 +344,13 @@ public class SudokuView extends JFrame{
 		button.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e){
+				selectedNumber = button;
 				if(selectedSquare != null ){
 					selectedSquare.setText(String.valueOf(number));
 					selectedSquare.setFont(new Font("Dialog", 13, 20));
+					if( checkWin() ){
+						win();
+					}
 				}
 			}
 		});
@@ -332,6 +383,7 @@ public class SudokuView extends JFrame{
 				getHint();
 			}
 		});
+		hint = button;
 	}
 	
 	public void bindResetButton(JButton button){
@@ -341,6 +393,7 @@ public class SudokuView extends JFrame{
 				resetGame();
 			}
 		});
+		reset = button;
 	}
 	
 	public void bindCheckButton(JButton button){
@@ -350,6 +403,7 @@ public class SudokuView extends JFrame{
 				checkGame();
 			}
 		});
+		check = button;
 	}
 	
 	public void createNewGame(){
@@ -428,7 +482,6 @@ public class SudokuView extends JFrame{
 	
 	public void checkGame(){
 		int[][] initial = initialGameBoard;
-		int[][] solvedGameBoard = currentSolution.sudokuBoard; 
 		int[][] currentGameBoard = new int[9][9];
 		
 		for( int i = 0; i < 9; i++ ){
@@ -455,10 +508,50 @@ public class SudokuView extends JFrame{
 							& SudokuSolution.checkBlock(i, j, value, currentGameBoard));
 					if(valid == false ){
 						sudokuBoard[i][j].setBackground(Color.getHSBColor(0.95f, 0.33f, 0.85f));
+						wrongSquares[i][j] = sudokuBoard[i][j];
 					}
 				}
 			}
 		}
+	}
+	
+	public boolean checkWin(){
+		int[][] currentGameBoard = new int[9][9];
+		
+		for( int i = 0; i < 9; i++ ){
+			for( int j = 0; j < 9; j++ ){
+				String valueString = sudokuBoard[i][j].getText();
+				
+				try{ 
+					int value = Integer.valueOf(valueString);
+					currentGameBoard[i][j] = value;
+				} catch(NumberFormatException noValue){
+					currentGameBoard[i][j] = 0;
+				}
+			}
+		}
+		
+		for( int i = 0; i < 9; i++ ){
+			for( int j = 0; j < 9; j++ ){
+				int value = currentGameBoard[i][j];
+				
+				if( value != currentSolution.sudokuBoard[i][j])
+					return win = false;
+			}
+		}
+		
+		win = true;
+		return win;
+	}
+	
+	public void win(){
+		for( int i = 0; i < 9; i++ ){
+			for( int j = 0; j < 9; j++ ){
+				makeSudokuInitialButtons(sudokuBoard[i][j]);
+			}
+		}
+		SudokuWin win = new SudokuWin();
+		win.setCurrentView(this);
 	}
 	
 	public static void main(String[] args){

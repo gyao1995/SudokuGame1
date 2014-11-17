@@ -1,11 +1,18 @@
 import java.util.*;
 
 public class SudokuSolution {
-		
 	protected int[][] sudokuBoard;
 	
 	public SudokuSolution(){
 		sudokuBoard = new int[9][9];
+		generateSolution(sudokuBoard);
+	}
+	
+	public SudokuSolution(int[][] sudokuBoard){
+		this.sudokuBoard = sudokuBoard;
+	}
+	
+	public void generateSolution(int[][] sudokuBoard){
 		ArrayList<Integer> integers = new ArrayList<Integer>();
 		
 		for(int num = 1; num <= 9; num++)
@@ -20,16 +27,10 @@ public class SudokuSolution {
 		}
 	}
 	
-	public SudokuSolution(int[][] sudokuBoard){
-		this.sudokuBoard = sudokuBoard;
-	}
-	
 	private int getNextNumber(int[][] board, int row, int column, ArrayList<Integer> rowNums){
 		while( rowNums.size() > 0 ){
 			int value = rowNums.remove(0);
-			if( checkRow(row, value, sudokuBoard) 
-					& checkColumn(column, value, sudokuBoard)
-					& checkBlock(row, column, value, sudokuBoard)){
+			if( checkValid(row, column, value, sudokuBoard)){
 				return value;
 			}
 			rowNums.add(value);
@@ -37,9 +38,15 @@ public class SudokuSolution {
 		return -1; 
 	}
 	
+	public static boolean checkValid(int row, int column, int value, int[][] sudokuBoard){
+		boolean valid = checkRow( row, value, sudokuBoard )
+						& checkColumn( column, value, sudokuBoard )
+						& checkBlock( row, column, value, sudokuBoard );
+		return valid;
+	}
+	
 	/**
-	 * Returns false if a given value is already contained within a row of the sudokuBoard.
-	 * @param row is the row of the sudokuBoard along which to check.
+	 * @param row, the row of the sudokuBoard along which to check.
 	 * @param value is the value to check for
 	 * @param sudokuBoard
 	 */
