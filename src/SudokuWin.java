@@ -1,25 +1,17 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.util.*;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
+@SuppressWarnings("serial")
 public class SudokuWin extends JFrame {
 	private SudokuController controller;
 	private SudokuView currentView;
 	private JPanel winContentPane;
-	private static JButton newGame;
-	private static JButton quitGame;
-	private static JButton cancel;
 	
 	public SudokuWin(){
-		newGame = new JButton();
-		quitGame = new JButton();
-		cancel = new JButton();
 		
 		winContentPane = new JPanel(new GridBagLayout());
 		setTitle("SUDOKU");
@@ -107,7 +99,6 @@ public class SudokuWin extends JFrame {
 				dispose();
 			}
 		});
-		newGame = button;
 	}
 	
 	public void bindCancelButton(JButton button){
@@ -117,8 +108,6 @@ public class SudokuWin extends JFrame {
 				dispose();
 			}
 		});
-		
-		cancel = button;
 	}
 	
 	public void bindQuitGameButton(JButton button){
@@ -129,7 +118,6 @@ public class SudokuWin extends JFrame {
 				closeCurrentView();
 			}
 		});
-		quitGame = button;
 	}
 	
 	public void createNewGame(){

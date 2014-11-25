@@ -9,10 +9,9 @@ import java.util.Collections;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-
 public class SudokuController {
 	
-	private static SudokuView currentView;
+	private SudokuView currentView;
 	protected SudokuGame currentGame;
 	protected SudokuSolution currentSolution;
 	private JButton[][] sudokuBoard;
@@ -21,7 +20,7 @@ public class SudokuController {
 	private JButton[][] wrongSquares;
 	private int selectedNumber;
 	private boolean win;
-	
+
 	public SudokuController(){
 		currentGame = new SudokuGame();
 		currentSolution = currentGame.getSolution();
@@ -101,9 +100,8 @@ public class SudokuController {
 	
 	public void initializeWrongSquares(){
 		for( int i = 0; i < 9; i++ ){
-			for( int j = 0; j < 9; j++ ){
+			for( int j = 0; j < 9; j++ )
 				wrongSquares[i][j] = new JButton("0");
-			}
 		}
 	}
 	
@@ -113,9 +111,8 @@ public class SudokuController {
 			button.setText(String.valueOf(selectedNumber));
 			button.setFont(new Font("Dialog", 13, 20));
 			selectedNumber = 0;
-			if( checkWin() ){
+			if( checkWin() )
 				win();
-			}
 		}
 		resetWrongSquares();
 		
@@ -131,9 +128,8 @@ public class SudokuController {
 					selectedSquare.setText(String.valueOf(selectedNumber));
 					selectedSquare.setFont(new Font("Dialog", 13, 20));
 					selectedNumber = 0;
-					if( checkWin() ){
+					if( checkWin() )
 						win();
-					}
 				}
 			}
 		});
@@ -147,7 +143,6 @@ public class SudokuController {
 				if( selectedSquare != null )
 					selectedSquare.setBackground(Color.WHITE);
 				selectedSquare = null;
-				
 			}
 		});
 		resetWrongSquares();
@@ -209,6 +204,9 @@ public class SudokuController {
 	public void createNewGame(){
 		currentView.remove(currentView.contentPane);
 		SudokuGame sudokuGame = new SudokuGame();
+		currentGame = sudokuGame;
+		currentSolution = currentGame.getSolution();
+		
 		currentView.newContentPane = new JPanel(new GridBagLayout());
 		currentView.setContentPane(currentView.newContentPane);
 		currentView.addSudokuBoard(currentView.newContentPane);
@@ -218,8 +216,6 @@ public class SudokuController {
 		currentView.revalidate();
 		currentView.repaint();
 		
-		currentGame = sudokuGame;
-		currentSolution = currentGame.getSolution();
 	}
 	
 	public void solveGame(){

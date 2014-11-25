@@ -1,9 +1,5 @@
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.*;
-
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
@@ -13,21 +9,11 @@ public class SudokuView extends JFrame{
 	private SudokuController controller;
 	protected JPanel contentPane;
 	protected JPanel newContentPane;
-	private JButton newGame;
-	private JButton solve;
-	private JButton hint;
-	private JButton reset;
-	private JButton check;
 	
 	public SudokuView(){
 		controller = new SudokuController();
 		controller.setCurrentView(this);
-		newGame = new JButton();
-		solve = new JButton();
-		reset = new JButton();
-		hint = new JButton();
-		check = new JButton();
-		
+
 		contentPane = new JPanel(new GridBagLayout());
 		setTitle("SUDOKU");
 		setMinimumSize(new Dimension(820, 650));
@@ -210,6 +196,6 @@ public class SudokuView extends JFrame{
 	}
 	
 	public static void main(String[] args){
-		SudokuView view = new SudokuView();
+		new SudokuView();
 	}
 }
