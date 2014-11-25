@@ -1,9 +1,10 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class SudokuGame {
 	private final SudokuSolution sudokuSolution;
-	public static int[][] sudokuBoard;
+	public int[][] sudokuBoard;
 	
 	public SudokuGame(){
 		sudokuSolution = new SudokuSolution();
@@ -38,7 +39,6 @@ public class SudokuGame {
 	
 	private boolean hasOneSolution( int row, int column, int[][] gameBoard ){
 		int numSolutions = 0;
-		SudokuSolution tempSudoku = new SudokuSolution(gameBoard);
 		
 		for( int value = 1; value <= 9; value++ ){
 			if( SudokuSolution.checkRow(row, value, gameBoard) 
@@ -51,10 +51,14 @@ public class SudokuGame {
 		if( numSolutions == 1 )return true;
 		return false;
 	}
-	
+
 	public SudokuSolution getSolution(){
 		SudokuSolution solution = new SudokuSolution(sudokuSolution.sudokuBoard);
 		return solution;
+	}
+	
+	public int[][] getSudokuBoard(){
+		return sudokuBoard;
 	}
 	
 	public String toString(){
@@ -70,8 +74,33 @@ public class SudokuGame {
 		return sudokuString;
 	}
 	
-	public static int[][] getSudokuBoard(){
-		return sudokuBoard;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(sudokuBoard);
+		result = prime * result
+				+ ((sudokuSolution == null) ? 0 : sudokuSolution.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SudokuGame other = (SudokuGame) obj;
+		if (!Arrays.deepEquals(sudokuBoard, other.sudokuBoard))
+			return false;
+		if (sudokuSolution == null) {
+			if (other.sudokuSolution != null)
+				return false;
+		} else if (!sudokuSolution.equals(other.sudokuSolution))
+			return false;
+		return true;
 	}
 
 }

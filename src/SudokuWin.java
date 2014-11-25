@@ -9,12 +9,12 @@ import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
 public class SudokuWin extends JFrame {
-	
+	private SudokuController controller;
+	private SudokuView currentView;
 	private JPanel winContentPane;
 	private static JButton newGame;
 	private static JButton quitGame;
 	private static JButton cancel;
-	private SudokuView currentView;
 	
 	public SudokuWin(){
 		newGame = new JButton();
@@ -54,7 +54,7 @@ public class SudokuWin extends JFrame {
 		GridLayout layout = new GridLayout(3, 1);
 		
 		JPanel emptyPanel = new JPanel();
-		emptyPanel.setBackground(Color.WHITE);
+		emptyPanel.setBackground(Color.getHSBColor(0.50f, 0.33f, 0.93f));
 		JPanel titlePanel = new JPanel(layout);
 		JPanel title2 = new JPanel(new BorderLayout());
 		
@@ -63,12 +63,12 @@ public class SudokuWin extends JFrame {
 		title.setHorizontalAlignment(SwingConstants.CENTER);
 		
 		title2.add(title, BorderLayout.CENTER);
-		title2.setBackground(Color.WHITE);
+		title2.setBackground(Color.getHSBColor(0.50f, 0.33f, 0.93f));
 		title2.setOpaque(true);
 		
 		titlePanel.add(emptyPanel);
 		titlePanel.add(title2);
-		titlePanel.setBackground(Color.WHITE);
+		titlePanel.setBackground(Color.getHSBColor(0.50f, 0.33f, 0.93f));
 		titlePanel.setOpaque(true);
 		
 		return titlePanel;
@@ -133,7 +133,7 @@ public class SudokuWin extends JFrame {
 	}
 	
 	public void createNewGame(){
-		currentView.createNewGame();
+		controller.createNewGame();
 	}
 	
 	public void setCurrentView(SudokuView currentView){
@@ -142,5 +142,9 @@ public class SudokuWin extends JFrame {
 	
 	public void closeCurrentView(){
 		currentView.dispose();
+	}
+
+	public void setCurrentController(SudokuController controller) {
+		this.controller = controller;
 	}
 }

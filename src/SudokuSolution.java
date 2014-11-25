@@ -5,34 +5,32 @@ public class SudokuSolution {
 	
 	public SudokuSolution(){
 		sudokuBoard = new int[9][9];
-		generateSolution(sudokuBoard);
+		generateSolution();
 	}
 	
 	public SudokuSolution(int[][] sudokuBoard){
 		this.sudokuBoard = sudokuBoard;
 	}
 	
-	public void generateSolution(int[][] sudokuBoard){
+	public void generateSolution(){
 		ArrayList<Integer> integers = new ArrayList<Integer>();
-		
 		for(int num = 1; num <= 9; num++)
 			integers.add(num);
 		Collections.shuffle(integers);
 		
 		for( int i = 0; i < 9; i++ ){
 			ArrayList<Integer> rowNums = new ArrayList<Integer>(integers);
-			for( int j = 0; j < 9; j++){
+			for( int j = 0; j < 9; j++)
 				sudokuBoard[i][j] = getNextNumber(sudokuBoard, i, j, rowNums);
-			}
 		}
 	}
+	
 	
 	private int getNextNumber(int[][] board, int row, int column, ArrayList<Integer> rowNums){
 		while( rowNums.size() > 0 ){
 			int value = rowNums.remove(0);
-			if( checkValid(row, column, value, sudokuBoard)){
+			if( checkValid(row, column, value, sudokuBoard))
 				return value;
-			}
 			rowNums.add(value);
 		}
 		return -1; 
@@ -99,4 +97,28 @@ public class SudokuSolution {
 		String sudokuString = sb.toString();
 		return sudokuString;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(sudokuBoard);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SudokuSolution other = (SudokuSolution) obj;
+		if (!Arrays.deepEquals(sudokuBoard, other.sudokuBoard))
+			return false;
+		return true;
+	}
+	
+	
 }
