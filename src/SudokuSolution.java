@@ -10,7 +10,7 @@ import java.util.*;
  *
  */
 public class SudokuSolution {
-	protected int[][] sudokuBoard;
+	private int[][] sudokuBoard;
 	
 	/**
 	 * Constructs a SudokuSolution
@@ -179,6 +179,19 @@ public class SudokuSolution {
 		if( lineNum >= 3 & lineNum <= 5) index = 3;
 		if( lineNum >= 6 & lineNum <= 8) index = 6;
 		return index;
+	}
+	
+	/**
+	 * Returns a copy of this sudokuBoard
+	 * 
+	 * @return a copy of this sudokuBoard
+	 * 
+	 */
+	public int[][] getSudokuBoard() {
+		int[][] tempBoard = new int[9][9];
+		for( int i = 0; i < 9; i++ )
+			System.arraycopy(sudokuBoard[i], 0, tempBoard[i], 0, tempBoard[i].length);
+		return tempBoard;
 	}
 	
 	/**

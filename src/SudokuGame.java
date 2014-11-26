@@ -23,7 +23,7 @@ public class SudokuGame {
 		// Clone sudokuSolution.sudokuBoard to a temporary board 
 		int[][] tempBoard = new int[9][9];
 		for( int i = 0; i < 9; i++ )
-			System.arraycopy(sudokuSolution.sudokuBoard[i], 0, tempBoard[i], 0, tempBoard[i].length);
+			System.arraycopy(sudokuSolution.getSudokuBoard()[i], 0, tempBoard[i], 0, tempBoard[i].length);
 		
 		// Create two shuffled lists - row positions and column positions - of the nine integers
 		// from 1 to 9, inclusive
@@ -84,7 +84,7 @@ public class SudokuGame {
 	 * 
 	 */
 	public SudokuSolution getSolution(){
-		SudokuSolution solution = new SudokuSolution(sudokuSolution.sudokuBoard);
+		SudokuSolution solution = new SudokuSolution(sudokuSolution.getSudokuBoard());
 		return solution;
 	}
 	

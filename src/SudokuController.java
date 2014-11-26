@@ -219,7 +219,7 @@ public class SudokuController {
 	}
 	
 	public void solveGame(){
-		int[][] solvedGameBoard = currentSolution.sudokuBoard; 
+		int[][] solvedGameBoard = currentSolution.getSudokuBoard(); 
 		
 		for( int i = 0; i < 9; i++ ){
 			for( int j = 0; j < 9; j++ ){
@@ -255,7 +255,7 @@ public class SudokuController {
 		Collections.shuffle(rowPos);
 		Collections.shuffle(colPos);
 		
-		int[][] solvedGameBoard = currentSolution.sudokuBoard; 
+		int[][] solvedGameBoard = currentSolution.getSudokuBoard(); 
 
 		outerLoop:
 		for( int m = 0; m < rowPos.size(); m++ ){
@@ -333,7 +333,7 @@ public class SudokuController {
 			for( int j = 0; j < 9; j++ ){
 				int value = currentGameBoard[i][j];
 				
-				if( value != currentSolution.sudokuBoard[i][j])
+				if( value != currentSolution.getSudokuBoard()[i][j])
 					return win = false;
 			}
 		}
