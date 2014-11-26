@@ -44,7 +44,7 @@ public class SudokuSolution {
 	public int[][] generateSolution(){		
 		int[][] tempBoard = new int[9][9];
 		
-		// Create a shuffled list of nine integers, each integer between 1 and 9, inclusive
+		// Create a shuffled list of the nine integers from 1 to 9, inclusive
 		ArrayList<Integer> integers = new ArrayList<Integer>();
 		for(int num = 1; num <= 9; num++)
 			integers.add(num);

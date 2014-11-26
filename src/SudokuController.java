@@ -36,7 +36,7 @@ public class SudokuController {
 	
 	public void bindSudokuButton(int i, int j, JButton button) {
 		for( int n = 0; n < 9; n++ ){
-			System.arraycopy(currentGame.sudokuBoard[n], 0, initialGameBoard[n], 0, initialGameBoard[n].length);
+			System.arraycopy(currentGame.getInitialBoard()[n], 0, initialGameBoard[n], 0, initialGameBoard[n].length);
 		}
 		
 		int[][] initial = initialGameBoard;
